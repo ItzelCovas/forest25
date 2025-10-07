@@ -5,7 +5,14 @@ using UUIDs
 instances = Dict()
 
 route("/simulations", method = POST) do
-    model = forest_fire()
+    payload =jsonpayload() 
+    x = payload["dim"][1]
+    y = payload["dim"][2]
+    d = payload["density"]
+
+    model = forest_fire(griddims=(x,y), density=d)
+
+    # model = forest_fire()
     id = string(uuid1())
     instances[id] = model
 
