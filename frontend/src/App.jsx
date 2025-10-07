@@ -78,16 +78,16 @@ function App() {
   return (
     <>
       <div>
-        <Button variant={"contained"} onClick={setup}>
+        <Button variation={"primary"} onClick={setup}>
           Setup
         </Button>
-        <Button variant={"contained"} onClick={handleStart}>
+        <Button variation={"primary"} onClick={handleStart}>
           Start
         </Button>
-        <Button variant={"contained"} onClick={(handleStop)}>
+        <Button variation={"primary"} onClick={(handleStop)}>
           Pause 
         </Button>
-        <Button variant={"contained"} onClick={handleStop}> 
+        <Button variation={"primary"} onClick={handleStop}> 
           Stop 
         </Button>
       </div>
@@ -121,7 +121,7 @@ function App() {
         />
       </div>
 
-      <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" style={{backgroundColor:"white"}}>
+      <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" style={{backgroundColor:"white"}}> 
       {
         trees.map(tree => 
           <image 
