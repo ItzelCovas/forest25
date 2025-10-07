@@ -23,7 +23,7 @@ function forest_step(tree::TreeAgent, model) #función define qué hace un árbo
 end
 
 # función principal que crea nuestro modelo del bosque.
-function forest_fire(; density = 0.50, griddims = (5, 5)) # parámetros opcionales: density (densidad de árboles) y griddims (dimensiones de la cuadrícula).
+function forest_fire(; density = 0.45, griddims = (5, 5)) # parámetros opcionales: density (densidad de árboles) y griddims (dimensiones de la cuadrícula).
     #Se crea el espacio: una cuadrícula de 5x5 donde los árboles no pueden compartir la misma celda.
     space = GridSpaceSingle(griddims; periodic = false, metric = :manhattan)
     # Creamos el modelo de agentes (el bosque), usando nuestros árboles (TreeAgent) y la función de paso (forest_step)

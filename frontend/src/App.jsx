@@ -13,9 +13,22 @@ function App() {
 
   const running = useRef(null);
 
+  const handleGridSizeSliderChange = (value) => {
+    setGridSize(value);
+  };
+
+  const handleSimSpeedSliderChange = (value) => {
+    setSimSpeed(value);
+  };
+
+  const handleDensitySliderChange = (value) => { 
+    setDensity(value);
+  };
+
   let setup = () => {
     console.log("Hola");
     if (running.current) clearInterval(running.current); // Detener simulación si ya está corriendo
+    running.current = null;
 
     fetch("http://localhost:8000/simulations", {
       method: 'POST',
@@ -52,18 +65,6 @@ function App() {
     clearInterval(running.current);
     running.current = null; 
   }
-
-  const handleGridSizeSliderChange = (value) => {
-    setGridSize(value);
-  };
-
-  const handleSimSpeedSliderChange = (value) => {
-    setSimSpeed(value);
-  };
-
-  const handleDensitySliderChange = (value) => { 
-    setDensity(value);
-  };
 
   let burning = trees.filter(t => t.status == "burning").length;
 
@@ -102,7 +103,7 @@ function App() {
         />
 
         <SliderField 
-          label="Simulation speed (fps)" 
+          label="Simulation speed" 
           min={1} 
           max={10} 
           step={1} 

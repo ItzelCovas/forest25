@@ -6,8 +6,8 @@ instances = Dict()
 
 route("/simulations", method = POST) do
     payload =jsonpayload() 
-    x = payload["dim"][1]
-    y = payload["dim"][2]
+    x = payload["griddims"][1]
+    y = payload["griddims"][2]
     d = payload["density"]
 
     model = forest_fire(griddims=(x,y), density=d)
