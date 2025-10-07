@@ -52,8 +52,11 @@ function App() {
         <Button variant={"contained"} onClick={handleStart}>
           Start
         </Button>
-        <Button variant={"contained"} onClick={handleStop}>
-          Stop
+        <Button variant={"contained"} onClick={(handleStop)}>
+          Pause 
+        </Button>
+        <Button variant={"contained"} onClick={handleStop}> 
+          Stop 
         </Button>
       </div>
       <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" style={{backgroundColor:"white"}}>
