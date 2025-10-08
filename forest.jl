@@ -14,8 +14,8 @@ function forest_step(tree::TreeAgent, model) #función define qué hace un árbo
     if tree.status == burning # Si el árbol está "burning", entonces:
         for neighbor in nearby_agents(tree, model) # busca a todos sus vecinos en la cuadrícula.
             #si vecino está "green", lo contagiamos y ahora estará "burning".
-            if neighbor.status == green
-                neighbor.status = burning
+            if neighbor.status == green && rand(model.rng) < model.probability_of_spread #rand(model.rng es para generar un número aleatorio entre 0 y 1. Si ese número es menor que model.probability_of_spread, entonces el fuego se propaga
+                neighbor.status = burning #el vecino se quema 
             end
         end
         tree.status = burnt  #después de haber contagiado a sus vecinos, el árbol original pasa a estar "burnt".
@@ -23,11 +23,14 @@ function forest_step(tree::TreeAgent, model) #función define qué hace un árbo
 end
 
 # función principal que crea nuestro modelo del bosque.
-function forest_fire(; density = 0.45, griddims = (5, 5)) # parámetros opcionales: density (densidad de árboles) y griddims (dimensiones de la cuadrícula).
+function forest_fire(; density = 0.45, griddims = (5, 5), probability_of_spread = 1.0) # parámetros opcionales: density (densidad de árboles) y griddims (dimensiones de la cuadrícula). ahora también probability_of_spread (probabilidad de que el fuego se propague de un árbol a otro).
     #Se crea el espacio: una cuadrícula de 5x5 donde los árboles no pueden compartir la misma celda.
     space = GridSpaceSingle(griddims; periodic = false, metric = :manhattan)
+
+    properties = Dict(:probability_of_spread => probability_of_spread, :rng => Random.default_rng() ) #propiedad del modelo que guarda la probabilidad de propagación del fuego. 
+
     # Creamos el modelo de agentes (el bosque), usando nuestros árboles (TreeAgent) y la función de paso (forest_step)
-    forest = StandardABM(TreeAgent, space; agent_step! = forest_step, scheduler = Schedulers.ByID())
+    forest = StandardABM(TreeAgent, space; properties, agent_step! = forest_step, scheduler = Schedulers.ByID())
 
     for pos in positions(forest) # Recorremos cada posición de la cuadrícula para plantar árboles
         # Usamos la density para decidir si plantamos un árbol o no.

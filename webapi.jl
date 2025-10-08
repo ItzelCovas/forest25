@@ -10,7 +10,9 @@ route("/simulations", method = POST) do
     y = payload["griddims"][2]
     d = payload["density"]
 
-    model = forest_fire(griddims=(x,y), density=d)
+    prob_spread = payload["probability_of_spread"] #extraemos la probabilidad de propagación del fuego del JSON recibido (del frontend) 
+
+    model = forest_fire(griddims=(x,y), density=d, probability_of_spread=prob_spread) 
 
     # model = forest_fire()
     id = string(uuid1())
@@ -25,7 +27,7 @@ route("/simulations", method = POST) do
 end
 
 route("/simulations/:id") do
-    model = instances[payload(:id)]
+    model = instances[Genie.params(:id)]
     run!(model, 1)
     trees = []
     for tree in allagents(model)

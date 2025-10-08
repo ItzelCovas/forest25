@@ -10,6 +10,7 @@ function App() {
   let [gridSize, setGridSize] = useState(20); //Ahora es una variable de estado, con valor inicial 20
   let [simSpeed, setSimSpeed] = useState(2); // 2 actualizaciones por segundo
   let [density, setDensity] = useState(0.45); // 45% de densidad de árboles
+  let [probabilityOfSpread, setProbabilityOfSpread] = useState(50); //50% de probabilidad de propagación del fuego
 
   const running = useRef(null);
 
@@ -25,6 +26,11 @@ function App() {
     setDensity(value);
   };
 
+  const handleProbabilitySliderChange = (value) => {
+    setProbabilityOfSpread(value);
+  };
+
+
   let setup = () => {
     console.log("Hola");
     if (running.current) clearInterval(running.current); // Detener simulación si ya está corriendo
@@ -35,7 +41,7 @@ function App() {
       headers: { 'Content-Type': 'application/json' },
 
       // Enviar los parámetros al backend
-      body: JSON.stringify({ griddims: [gridSize, gridSize], density: density }) 
+      body: JSON.stringify({ griddims: [gridSize, gridSize], density:density, probability_of_spread:probabilityOfSpread / 100}) 
 
     }).then(resp => resp.json())
     .then(data => {
@@ -49,6 +55,7 @@ function App() {
     if (running.current) clearInterval(running.current); 
 
     console.log("location", location);
+    
     running.current = setInterval(() => {
       fetch("http://localhost:8000" + location)
       .then(res => res.json())
@@ -75,19 +82,20 @@ function App() {
   //   handleStop();
 
   let offset = (500 - gridSize * 12) / 2;
+
   return (
     <>
       <div>
-        <Button variation={"primary"} onClick={setup}>
+        <Button variation="primary" onClick={setup}>
           Setup
         </Button>
-        <Button variation={"primary"} onClick={handleStart}>
+        <Button  onClick={handleStart}>
           Start
         </Button>
-        <Button variation={"primary"} onClick={(handleStop)}>
+        <Button  onClick={(handleStop)}>
           Pause 
         </Button>
-        <Button variation={"primary"} onClick={handleStop}> 
+        <Button variation="destructive" onClick={handleStop}> 
           Stop 
         </Button>
       </div>
@@ -119,6 +127,16 @@ function App() {
           value={density} 
           onChange={handleDensitySliderChange}
         />
+        <SliderField 
+          label="Probability of spread" 
+          min={0} 
+          max={100} 
+          step={1} 
+          value={probabilityOfSpread} 
+          onChange={handleProbabilitySliderChange}
+          labelHidden={false}
+        />
+
       </div>
 
       <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" style={{backgroundColor:"white"}}> 
