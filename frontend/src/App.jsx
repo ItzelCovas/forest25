@@ -11,6 +11,8 @@ function App() {
   let [simSpeed, setSimSpeed] = useState(4);
   let [density, setDensity] = useState(0.6);
   let [probabilityOfSpread, setProbabilityOfSpread] = useState(60);
+  let [south_wind_speed, setsouth_wind_speed]=useState(0); // Viento sur a norte (-50 a 50)
+  let [west_wind_speed, setwest_wind_speed]=useState[0]; //Viento  oeste a este (-50 a 50) 
 
   // para estadísticas
   const [steps, setSteps] = useState(0);
@@ -24,6 +26,8 @@ function App() {
   const handleSimSpeedSliderChange = (value) => setSimSpeed(value);
   const handleDensitySliderChange = (value) => setDensity(value);
   const handleProbabilitySliderChange = (value) => setProbabilityOfSpread(value);
+  const handleSouthWindSpeedChange=(value)=>setsouth_wind_speed(value);
+  const handleWestWindSpeedChange=(value)=>setwest_wind_speed(value);
 
   const setup = () => {
     handleStop();
