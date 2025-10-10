@@ -60,13 +60,16 @@ function forest_fire(;
 
     properties = Dict(
         :probability_of_spread => probability_of_spread, 
-        :south_wind_speed=>south_wind_speed, 
-        :west_wind_speed0=>west_wind_speed, 
+        :south_wind_speed => south_wind_speed, 
+        :west_wind_speed => west_wind_speed, 
         :rng => Random.default_rng() 
     ) #propiedad del modelo que guarda la probabilidad de propagación del fuego. 
 
     # Creamos el modelo de agentes (el bosque), usando nuestros árboles (TreeAgent) y la función de paso (forest_step)
-    forest = StandardABM(TreeAgent, space; properties, agent_step! = forest_step, scheduler = Schedulers.ByID())
+    forest = StandardABM(TreeAgent, space; 
+        properties, 
+        agent_step! = forest_step, 
+        scheduler = Schedulers.ByID())
 
     for pos in positions(forest) # Recorremos cada posición de la cuadrícula para plantar árboles
         # Usamos la density para decidir si plantamos un árbol o no.

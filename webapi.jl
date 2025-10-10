@@ -36,18 +36,16 @@ route("/simulations", method = POST) do
 end
 
 route("/simulations/:id") do
-    model = instances[Genie.params(:id)]
-    run!(model, 1)
-    trees = []
-    for tree in allagents(model)
-        push!(trees, Dict(
-            :id=>tree.id,
-            :pos=>tree.pos,
-            :status=>string(tree.status)
-        ))
+    id = Genie.params(:id)
+    println("GET id recibido: $id")  # depuración
+    if !haskey(instances, id)
+        return json(Dict(:error => "Simulación no encontrada"))
     end
-    
-    json(Dict(:msg => "Adios", "trees" => trees))
+
+    model = instances[id]
+    run!(model, 1)
+    trees = [tree for tree in allagents(model)]
+    json(Dict(:msg => "Simulación actualizada", "trees" => trees))
 end
 
 Genie.config.run_as_server = true
