@@ -12,7 +12,7 @@ function App() {
   let [density, setDensity] = useState(0.6);
   let [probabilityOfSpread, setProbabilityOfSpread] = useState(60);
   let [south_wind_speed, setsouth_wind_speed]=useState(0); // Viento sur a norte (-50 a 50)
-  let [west_wind_speed, setwest_wind_speed]=useState[0]; //Viento  oeste a este (-50 a 50) 
+  let [west_wind_speed, setwest_wind_speed]=useState(0); //Viento  oeste a este (-50 a 50) 
 
   // para estadísticas
   const [steps, setSteps] = useState(0);
@@ -39,7 +39,9 @@ function App() {
       body: JSON.stringify({ 
         griddims: [gridSize, gridSize], 
         density: density,
-        probability_of_spread: probabilityOfSpread / 100 
+        probability_of_spread: probabilityOfSpread / 100,
+        south_wind_speed: south_wind_speed,
+        west_wind_speed: west_wind_speed
       })
     }).then(resp => resp.json())
     .then(data => {
@@ -97,10 +99,48 @@ function App() {
       
       <Flex direction={{base: 'column', large: 'row'}} gap="1rem" width="100%" justifyContent="center">
         <Card width={{base: '90%', large: '400px'}} variation="outlined">
-          <SliderField label="Grid size" min={10} max={40} step={10} value={gridSize} onChange={handleGridSizeSliderChange} />
-          <SliderField label="Simulation speed" min={1} max={10} step={1} value={simSpeed} onChange={handleSimSpeedSliderChange} />
-          <SliderField label="Forest Density" min={0.1} max={1.0} step={0.05} value={density} onChange={handleDensitySliderChange} />
-          <SliderField label={`Probability of Spread: ${probabilityOfSpread}%`} min={0} max={100} step={1} value={probabilityOfSpread} onChange={handleProbabilitySliderChange} />
+          <SliderField 
+            label="Grid size" 
+            min={10} max={40} step={10} 
+            value={gridSize} 
+            onChange={handleGridSizeSliderChange} 
+          />
+          <SliderField 
+            label="Simulation speed" 
+              min={1} max={10} step={1} 
+              value={simSpeed} 
+              onChange={handleSimSpeedSliderChange} 
+            />
+          <SliderField 
+            label="Forest Density" 
+            min={0.1} max={1.0} step={0.05} 
+            value={density} 
+            onChange={handleDensitySliderChange} 
+          />
+          <SliderField 
+            label={`Probability of Spread: ${probabilityOfSpread}%`} 
+            min={0} max={100} step={1} 
+            value={probabilityOfSpread} 
+            onChange={handleProbabilitySliderChange} 
+          />
+          <SliderField
+            label={'Vertical Wind (South => North)'}
+            min={-50} 
+            max={50}
+            step={5}
+            value={south_wind_speed}
+            onChange={handleSouthWindSpeedChange}
+            isDisabled={isSimulating}
+          />
+          <SliderField
+          label={'Horizontal Wind (West => East)'}
+          min={-50} 
+          max={50}
+          step={5}
+          value={west_wind_speed}
+          onChange={handleWestWindSpeedChange}
+          isDisabled={isSimulating}
+        />
         </Card>
         
         <Card width={{base: '90%', large: '300px'}} variation="outlined">

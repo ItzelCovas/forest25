@@ -11,8 +11,17 @@ route("/simulations", method = POST) do
     d = payload["density"]
 
     prob_spread = payload["probability_of_spread"] #extraemos la probabilidad de propagación del fuego del JSON recibido (del frontend) 
+    south_wind_speed=get(payload, "south_wind_speed", 0.0)
+    west_wind_speed=get(payload, "west_wind_speed", 0.0)
 
-    model = forest_fire(griddims=(x,y), density=d, probability_of_spread=prob_spread) 
+    #Crear el modelo con el viento
+    model=forest_fire(
+        griddims=(x, y),
+        density=d,
+        probability_of_spread=prob_spread,
+        south_wind_speed=south_wind_speed,
+        west_wind_speed=west_wind_speed
+    ) 
 
     # model = forest_fire()
     id = string(uuid1())
@@ -31,7 +40,11 @@ route("/simulations/:id") do
     run!(model, 1)
     trees = []
     for tree in allagents(model)
-        push!(trees, tree)
+        push!(trees, Dict(
+            :id=>tree.id,
+            :pos=>tree.pos,
+            :status=>string(tree.status)
+        ))
     end
     
     json(Dict(:msg => "Adios", "trees" => trees))

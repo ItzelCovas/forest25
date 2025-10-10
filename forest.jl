@@ -14,8 +14,32 @@ function forest_step(tree::TreeAgent, model) #función define qué hace un árbo
     if tree.status == burning # Si el árbol está "burning", entonces:
         for neighbor in nearby_agents(tree, model) # busca a todos sus vecinos en la cuadrícula.
             #si vecino está "green", lo contagiamos y ahora estará "burning".
-            if neighbor.status == green && rand(model.rng) < model.probability_of_spread #rand(model.rng es para generar un número aleatorio entre 0 y 1. Si ese número es menor que model.probability_of_spread, entonces el fuego se propaga
-                neighbor.status = burning #el vecino se quema 
+            if neighbor.status == green
+                #Calculo de la dirección relativa entre el árbol y su vecino
+                dx=neighbor.pos[1]-tree.pos[1]
+                dy=neighbor.pos[2]-tree.pos[2]
+                prob=model.probability_of_spread
+                wind_bonus=0.0
+                #Viento de sur a norte(dy>0)
+                if dy>0
+                    wind_bonus+=model.south_wind_speed/100
+                elseif dy<0
+                    wind_bonus-=model.south_wind_speed/100
+                end
+                #Viento de este a oeste(dx>0)
+                if dx>0
+                    wind_bonus+=model.west_wind_speed/100
+                elseif dx<0
+                    wind_bonus-=model.west_wind_speed/100
+                end
+
+                #Se aplica la probabilidad ajustada por el Viento
+                adjusted_prob=clamp(prob+wind_bonus, 0.0, 1.0)
+
+                #La propagación ahora se ajustara a adjusted_prob
+                if rand(model.rng)<adjusted_prob
+                    neighbor.status = burning #el vecino se quema 
+                end
             end
         end
         tree.status = burnt  #después de haber contagiado a sus vecinos, el árbol original pasa a estar "burnt".
@@ -23,11 +47,23 @@ function forest_step(tree::TreeAgent, model) #función define qué hace un árbo
 end
 
 # función principal que crea nuestro modelo del bosque.
-function forest_fire(; density = 0.45, griddims = (5, 5), probability_of_spread = 1.0) # parámetros opcionales: density (densidad de árboles) y griddims (dimensiones de la cuadrícula). ahora también probability_of_spread (probabilidad de que el fuego se propague de un árbol a otro).
+function forest_fire(;
+    density = 0.45, 
+    griddims = (5, 5), 
+    probability_of_spread = 1.0, 
+    south_wind_speed=0.0, 
+    west_wind_speed=0.0
+) # parámetros opcionales: density (densidad de árboles) y griddims (dimensiones de la cuadrícula). ahora también probability_of_spread (probabilidad de que el fuego se propague de un árbol a otro).
+    
     #Se crea el espacio: una cuadrícula de 5x5 donde los árboles no pueden compartir la misma celda.
     space = GridSpaceSingle(griddims; periodic = false, metric = :manhattan)
 
-    properties = Dict(:probability_of_spread => probability_of_spread, :rng => Random.default_rng() ) #propiedad del modelo que guarda la probabilidad de propagación del fuego. 
+    properties = Dict(
+        :probability_of_spread => probability_of_spread, 
+        :south_wind_speed=>south_wind_speed, 
+        :west_wind_speed0=>west_wind_speed, 
+        :rng => Random.default_rng() 
+    ) #propiedad del modelo que guarda la probabilidad de propagación del fuego. 
 
     # Creamos el modelo de agentes (el bosque), usando nuestros árboles (TreeAgent) y la función de paso (forest_step)
     forest = StandardABM(TreeAgent, space; properties, agent_step! = forest_step, scheduler = Schedulers.ByID())
