@@ -42,6 +42,25 @@ function forest_step(tree::TreeAgent, model) #función define qué hace un árbo
                 end
             end
         end
+
+        #Propagación a distancia
+        if get(model.properties, :big_jumps, false)
+            scale_factor=15.0
+            jump_x=tree.pos[1]+Int(round(model.west_wind_speed/scale_factor))
+            jump_y=tree.pos[2]+Int(round(model.south_wind_speed/scale_factor))
+            distant_pos=(jump_x, jump_y)
+
+            if all(>=(1), distant_pos) &&
+                distant_pos[1]<=model.space.dims[1]&&
+                distant_pos[2]<=model.space.dims[2]
+                distant_agents=agentes_in_position(distant_pos, model)
+                for distant_tree in distant_agents
+                    if distant_tree.status==green
+                        distant_tree.status=burning
+                    end
+                end
+            end
+        end
         tree.status = burnt  #después de haber contagiado a sus vecinos, el árbol original pasa a estar "burnt".
     end
 end
@@ -52,7 +71,8 @@ function forest_fire(;
     griddims = (5, 5), 
     probability_of_spread = 1.0, 
     south_wind_speed=0.0, 
-    west_wind_speed=0.0
+    west_wind_speed=0.0,
+    big_jumps=false
 ) # parámetros opcionales: density (densidad de árboles) y griddims (dimensiones de la cuadrícula). ahora también probability_of_spread (probabilidad de que el fuego se propague de un árbol a otro).
     
     #Se crea el espacio: una cuadrícula de 5x5 donde los árboles no pueden compartir la misma celda.
@@ -62,6 +82,7 @@ function forest_fire(;
         :probability_of_spread => probability_of_spread, 
         :south_wind_speed => south_wind_speed, 
         :west_wind_speed => west_wind_speed, 
+        :big_jumps=>big_jumps
         :rng => Random.default_rng() 
     ) #propiedad del modelo que guarda la probabilidad de propagación del fuego. 
 

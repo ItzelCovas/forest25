@@ -9,10 +9,10 @@ route("/simulations", method = POST) do
     x = payload["griddims"][1]
     y = payload["griddims"][2]
     d = payload["density"]
-
     prob_spread = payload["probability_of_spread"] #extraemos la probabilidad de propagación del fuego del JSON recibido (del frontend) 
     south_wind_speed=get(payload, "south_wind_speed", 0.0)
     west_wind_speed=get(payload, "west_wind_speed", 0.0)
+    big_jumps=get(payload, "big_jumps", false)
 
     #Crear el modelo con el viento
     model=forest_fire(
@@ -20,7 +20,8 @@ route("/simulations", method = POST) do
         density=d,
         probability_of_spread=prob_spread,
         south_wind_speed=south_wind_speed,
-        west_wind_speed=west_wind_speed
+        west_wind_speed=west_wind_speed,
+        big_jumps=big_jumps
     ) 
 
     # model = forest_fire()
