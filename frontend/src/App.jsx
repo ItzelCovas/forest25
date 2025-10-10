@@ -1,6 +1,6 @@
 import { useRef, useState, useEffect } from 'react';
 import '@aws-amplify/ui-react/styles.css';
-import { Button, SliderField, Flex, View, Text, Card } from "@aws-amplify/ui-react";
+import { Button, SliderField, Flex, View, Text, Card, Input } from "@aws-amplify/ui-react";
 
 function App() {
   let [location, setLocation] = useState("");
@@ -19,6 +19,7 @@ function App() {
   const [initialTrees, setInitialTrees] = useState(0);
   const [burntPercentage, setBurntPercentage] = useState(0);
   const [isSimulating, setIsSimulating] = useState(false);
+  const [bigJumps, setBigJumps]=useState(false)
 
   const running = useRef(null);
 
@@ -41,7 +42,8 @@ function App() {
         density: density,
         probability_of_spread: probabilityOfSpread / 100,
         south_wind_speed: south_wind_speed,
-        west_wind_speed: west_wind_speed
+        west_wind_speed: west_wind_speed,
+        big_jumps:bigJumps
       })
     }).then(resp => resp.json())
     .then(data => {
@@ -140,7 +142,22 @@ function App() {
           value={west_wind_speed}
           onChange={handleWestWindSpeedChange}
           isDisabled={isSimulating}
-        />
+          />
+          <Flex alignItems="center" gap="0.5rem">
+            <input
+              type="checkbox"
+              checked={bigJumps}
+              onChange={e => setBigJumps(e.target.checked)}
+              disabled={isSimulating}
+              style={{ transform: "scale(1.5)" }}
+            />
+            <Text>
+              Permitir chispas a larga distancia:
+              <span style={{marginLeft: "0.5rem" }}>
+                {bigJumps ? "Activado" : "Desactivado"}
+              </span>
+            </Text>
+          </Flex>
         </Card>
         
         <Card width={{base: '90%', large: '300px'}} variation="outlined">
@@ -149,6 +166,7 @@ function App() {
             <Text>Initial trees: {initialTrees}</Text>
             <Text>Burnt percentage: {burntPercentage > 0 ? burntPercentage : '--'}%</Text>
         </Card>
+
       </Flex>
 
       <svg width="500" height="500" xmlns="http://www.w3.org/2000/svg" style={{backgroundColor:"white", border: "1px solid #ccc"}}>
